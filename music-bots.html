@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Музыкальные боты — Fun Beats</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1d27;
+    --bg4: #22263a;
+    --accent: #5865F2;
+    --accent2: #7289DA;
+    --green: #57F287;
+    --yellow: #FEE75C;
+    --red: #ED4245;
+    --text: #DCDDDE;
+    --muted: #72767D;
+    --white: #FFFFFF;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(88,101,242,0.3);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0d0f14 0%, #12152a 50%, #0d0f14 100%);
+    padding: 60px 40px 40px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(88,101,242,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(88,101,242,0.15);
+    border: 1px solid rgba(88,101,242,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--accent2);
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, #5865F2, #7289DA, #57F287);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 16px;
+    color: var(--muted);
+    /* margin-bottom: 36px; */
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat .num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .stat .label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: var(--border);
+    height: 40px;
+    align-self: center;
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .bot-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .bot-card:hover {
+    border-color: rgba(88,101,242,0.25);
+  }
+
+  .bot-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bot-badges {
+    width: 200px; margin-left: auto; display: flex;flex-direction: column;gap: 6px;
+  }
+
+@media (max-width: 768px) {
+  .bot-header, .commands-header {
+    flex-wrap: wrap;        /* разрешаем перенос строк */
+  }
+
+  .bot-meta {
+    flex: 1;                /* растягивается на остаток первой строки */
+  }
+
+  .limit-badge {
+    width: 100%;            /* бейдж занимает всю вторую строку */
+    margin-top: 0.5rem;     /* отступ сверху для аккуратности */
+    text-align: left;       /* текст бейджа выровнять как у остальных */
+  }
+
+  .bot-badges {
+white-space: nowrap;
+  width: 100%;
+  display: block;
+  flex: 1;
+  }
+}
+
+  .bot-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .bot-avatar img {
+    width: 52px; height: 52px;
+  }
+
+  .overflow-hidden {
+    overflow: hidden;
+  }
+
+  .bot-meta h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .bot-meta p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .limit-badge {
+    margin-left: auto;
+    background: rgba(254,231,92,0.1);
+    border: 1px solid rgba(254,231,92,0.25);
+    color: var(--yellow);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  .bot-body {
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 600px) {
+    .bot-body { grid-template-columns: 1fr; }
+    .hero { padding: 40px 20px 30px; }
+    .stats-row { gap: 16px; }
+    .stat-divider { display: none; }
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .platform-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .platform-chip .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+
+  .steps {
+    list-style: none;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .step:last-child { margin-bottom: 0; }
+
+  .step-num {
+    width: 22px; height: 22px;
+    min-width: 22px;
+    border-radius: 50%;
+    background: rgba(88,101,242,0.2);
+    border: 1px solid rgba(88,101,242,0.4);
+    color: var(--accent2);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .queue-tip {
+    grid-column: 1 / -1;
+    background: rgba(88,101,242,0.08);
+    border: 1px solid rgba(88,101,242,0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--accent2);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .queue-tip .icon { font-size: 16px; margin-top: 1px; }
+
+  .commands-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .commands-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .warning-note {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(237,66,69,0.1);
+    border: 1px solid rgba(237,66,69,0.25);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #f0797b;
+  }
+
+  .commands-table-wrap {
+    padding: 8px 28px 24px;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 12px 0 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody td {
+    padding: 10px 0;
+    vertical-align: middle;
+  }
+
+  .cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #9da5f5;
+    background: rgba(88,101,242,0.1);
+    padding: 3px 8px;
+    border-radius: 5px;
+  }
+
+  .cmd-action {
+    color: var(--text);
+    padding-left: 16px;
+  }
+
+  .cmd-emoji {
+    font-size: 15px;
+    margin-right: 6px;
+  }
+
+  .tips-card {
+    background: linear-gradient(135deg, rgba(87,242,135,0.05) 0%, rgba(88,101,242,0.05) 100%);
+    border: 1px solid rgba(87,242,135,0.15);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .tips-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .tips-icon {
+    /* width: 40px; height: 40px; */
+    /* border-radius: 10px; */
+    /* background: rgba(87,242,135,0.15); */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .tips-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .tips-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .tip-dot {
+    width: 6px; height: 6px;
+    min-width: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-top: 8px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  footer strong {
+    color: var(--accent2);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    Fun Beats ⚡ Discord-сервер
+  </div>
+  <div>
+    <div style="margin: 0 auto 20px;border-radius: 50%; overflow: hidden; width: 64px; height: 64px;">
+        <img src="./img/fun.png" style="width: 64px; height: 64px;"/>
+    </div>
+    <div>
+      <h1>Музыкальные<br><span>боты сервера</span></h1>
+      <p>Как запустить музыку в голосовых каналах</p>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- FlaviBot -->
+  <div class="bot-card">
+    <div class="bot-header">
+      <div class="bot-avatar overflow-hidden" style="background: #8468E8">
+        <img src="./img/bot1.png"/>
+      </div>
+      <div class="bot-meta">
+        <h2>FlaviBot</h2>
+        <p>FlaviBot &amp; FlaviBot2 — два независимых инстанса</p>
+      </div>
+      <div class="limit-badge">⚡ Макс. 2 инстанса</div>
+    </div>
+    <div class="bot-body">
+      <div>
+        <div class="section-label">Поддерживает</div>
+        <div class="platforms">
+          <div class="platform-chip"><span class="dot" style="background:#1DB954"></span>Spotify</div>
+          <div class="platform-chip"><span class="dot" style="background:#fc3c44"></span>Apple Music</div>
+          <div class="platform-chip"><span class="dot" style="background:#FF7100"></span>Deezer</div>
+          <div class="platform-chip"><span class="dot" style="background:#ff7700"></span>SoundCloud</div>
+          <div class="platform-chip"><span class="dot" style="background:#FF0000"></span>YouTube</div>
+          <div class="platform-chip"><span class="dot" style="background:#5865F2"></span>Радио</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">Как запустить</div>
+        <ul class="steps">
+          <li class="step"><span class="step-num">1</span><span>Зайдите в голосовой канал</span></li>
+          <li class="step"><span class="step-num">2</span><span>В тексте канала, справа от ввода сообщения нажмите на иконку
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 96 96" width="96" height="96" preserveAspectRatio="xMidYMid meet" style="width: 20px; height: 20px; display: inline-block;
+             content-visibility: visible;margin-bottom: -5px;
+  margin-left: 2px;"><defs><clipPath id="__lottie_element_108"><rect width="96" height="96" x="0" y="0"></rect></clipPath><clipPath id="__lottie_element_110"><path d="M0,0 L96,0 L96,96 L0,96z"></path></clipPath></defs><g clip-path="url(#__lottie_element_108)"><g clip-path="url(#__lottie_element_110)" transform="matrix(2.700000047683716,0,0,2.700000047683716,-79.60000610351562,-81.35110473632812)" opacity="1" style="display: block;"><g transform="matrix(1,0,0,1,32.02199935913086,32.64699935913086)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.179999828338623,7.181000232696533)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M-6.554999828338623,1.6410000324249268 C-6.929999828338623,3.0420000553131104 -6.099999904632568,4.480999946594238 -4.698999881744385,4.85699987411499 C-4.698999881744385,4.85699987411499 1.6410000324249268,6.554999828338623 1.6410000324249268,6.554999828338623 C3.0409998893737793,6.931000232696533 4.48199987411499,6.098999977111816 4.85699987411499,4.698999881744385 C4.85699987411499,4.698999881744385 6.554999828338623,-1.6410000324249268 6.554999828338623,-1.6410000324249268 C6.929999828338623,-3.0420000553131104 6.098999977111816,-4.480999946594238 4.698999881744385,-4.85699987411499 C4.698999881744385,-4.85699987411499 -1.6410000324249268,-6.556000232696533 -1.6410000324249268,-6.556000232696533 C-3.0409998893737793,-6.931000232696533 -4.48199987411499,-6.099999904632568 -4.85699987411499,-4.698999881744385 C-4.85699987411499,-4.698999881744385 -6.554999828338623,1.6410000324249268 -6.554999828338623,1.6410000324249268z"></path></g></g><g transform="matrix(1,0,0,1,47.44300079345703,32.419002532958984)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.802000045776367,7.021999835968018)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M-6.478000164031982,2.4040000438690186 C-7.552000045776367,4.372000217437744 -6.126999855041504,6.771999835968018 -3.884999990463257,6.771999835968018 C-3.884999990463257,6.771999835968018 3.885999917984009,6.771999835968018 3.885999917984009,6.771999835968018 C6.127999782562256,6.771999835968018 7.552000045776367,4.372000217437744 6.479000091552734,2.4040000438690186 C6.479000091552734,2.4040000438690186 2.5929999351501465,-4.718999862670898 2.5929999351501465,-4.718999862670898 C1.4739999771118164,-6.771999835968018 -1.4730000495910645,-6.771999835968018 -2.5929999351501465,-4.718999862670898 C-2.5929999351501465,-4.718999862670898 -6.478000164031982,2.4040000438690186 -6.478000164031982,2.4040000438690186z"></path></g></g><g transform="matrix(1,0,0,1,32.119998931884766,49.04499816894531)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.081999778747559,7.046999931335449)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M-0.9409999847412109,-6.26800012588501 C-0.42100000381469727,-6.796999931335449 0.41999998688697815,-6.796999931335449 0.9409999847412109,-6.26800012588501 C0.9409999847412109,-6.26800012588501 2.056999921798706,-5.132999897003174 2.056999921798706,-5.132999897003174 C2.2699999809265137,-4.916999816894531 2.5480000972747803,-4.78000020980835 2.8459999561309814,-4.744999885559082 C2.8459999561309814,-4.744999885559082 4.4120001792907715,-4.561999797821045 4.4120001792907715,-4.561999797821045 C5.140999794006348,-4.4770002365112305 5.665999889373779,-3.805999994277954 5.585000038146973,-3.061000108718872 C5.585000038146973,-3.061000108718872 5.410999774932861,-1.4630000591278076 5.410999774932861,-1.4630000591278076 C5.377999782562256,-1.1579999923706055 5.447000026702881,-0.8510000109672546 5.605999946594238,-0.5910000205039978 C5.605999946594238,-0.5910000205039978 6.441999912261963,0.7720000147819519 6.441999912261963,0.7720000147819519 C6.831999778747559,1.406999945640564 6.644999980926514,2.24399995803833 6.0229997634887695,2.6440000534057617 C6.0229997634887695,2.6440000534057617 4.690999984741211,3.502000093460083 4.690999984741211,3.502000093460083 C4.436999797821045,3.6649999618530273 4.24399995803833,3.9119999408721924 4.144000053405762,4.201000213623047 C4.144000053405762,4.201000213623047 3.621000051498413,5.7179999351501465 3.621000051498413,5.7179999351501465 C3.378000020980835,6.423999786376953 2.619999885559082,6.796999931335449 1.9259999990463257,6.551000118255615 C1.9259999990463257,6.551000118255615 0.43799999356269836,6.021999835968018 0.43799999356269836,6.021999835968018 C0.15399999916553497,5.921999931335449 -0.1550000011920929,5.921999931335449 -0.43799999356269836,6.021999835968018 C-0.43799999356269836,6.021999835968018 -1.9270000457763672,6.551000118255615 -1.9270000457763672,6.551000118255615 C-2.619999885559082,6.796999931335449 -3.378000020980835,6.423999786376953 -3.621999979019165,5.7179999351501465 C-3.621999979019165,5.7179999351501465 -4.144999980926514,4.201000213623047 -4.144999980926514,4.201000213623047 C-4.24399995803833,3.9119999408721924 -4.436999797821045,3.6649999618530273 -4.690999984741211,3.502000093460083 C-4.690999984741211,3.502000093460083 -6.02400016784668,2.6440000534057617 -6.02400016784668,2.6440000534057617 C-6.644999980926514,2.24399995803833 -6.831999778747559,1.406999945640564 -6.442999839782715,0.7720000147819519 C-6.442999839782715,0.7720000147819519 -5.605999946594238,-0.5910000205039978 -5.605999946594238,-0.5910000205039978 C-5.447000026702881,-0.8510000109672546 -5.377999782562256,-1.1579999923706055 -5.4120001792907715,-1.4630000591278076 C-5.4120001792907715,-1.4630000591278076 -5.585000038146973,-3.061000108718872 -5.585000038146973,-3.061000108718872 C-5.665999889373779,-3.805999994277954 -5.142000198364258,-4.4770002365112305 -4.4120001792907715,-4.561999797821045 C-4.4120001792907715,-4.561999797821045 -2.8469998836517334,-4.744999885559082 -2.8469998836517334,-4.744999885559082 C-2.5480000972747803,-4.78000020980835 -2.2699999809265137,-4.916999816894531 -2.056999921798706,-5.132999897003174 C-2.056999921798706,-5.132999897003174 -0.9409999847412109,-6.26800012588501 -0.9409999847412109,-6.26800012588501z"></path></g></g><g transform="matrix(-1,0,0,-1,62.694000244140625,63.320003509521484)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.247000217437744,7.247000217437744)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M1.5130000114440918,-5.5920000076293945 C0.9929999709129333,-6.997000217437744 -0.9940000176429749,-6.997000217437744 -1.5140000581741333,-5.5920000076293945 C-1.5140000581741333,-5.5920000076293945 -2.190999984741211,-3.760999917984009 -2.190999984741211,-3.760999917984009 C-2.4600000381469727,-3.0339999198913574 -3.0339999198913574,-2.4600000381469727 -3.76200008392334,-2.190999984741211 C-3.76200008392334,-2.190999984741211 -5.5920000076293945,-1.5130000114440918 -5.5920000076293945,-1.5130000114440918 C-6.997000217437744,-0.9940000176429749 -6.997000217437744,0.9929999709129333 -5.5920000076293945,1.5130000114440918 C-5.5920000076293945,1.5130000114440918 -3.76200008392334,2.190999984741211 -3.76200008392334,2.190999984741211 C-3.0339999198913574,2.4600000381469727 -2.4600000381469727,3.0339999198913574 -2.190999984741211,3.760999917984009 C-2.190999984741211,3.760999917984009 -1.5140000581741333,5.5920000076293945 -1.5140000581741333,5.5920000076293945 C-0.9940000176429749,6.997000217437744 0.9929999709129333,6.997000217437744 1.5130000114440918,5.5920000076293945 C1.5130000114440918,5.5920000076293945 2.190000057220459,3.760999917984009 2.190000057220459,3.760999917984009 C2.4600000381469727,3.0339999198913574 3.0329999923706055,2.4600000381469727 3.760999917984009,2.190999984741211 C3.760999917984009,2.190999984741211 5.5920000076293945,1.5130000114440918 5.5920000076293945,1.5130000114440918 C6.997000217437744,0.9929999709129333 6.997000217437744,-0.9940000176429749 5.5920000076293945,-1.5130000114440918 C5.5920000076293945,-1.5130000114440918 3.760999917984009,-2.190999984741211 3.760999917984009,-2.190999984741211 C3.0329999923706055,-2.4600000381469727 2.4600000381469727,-3.0339999198913574 2.190000057220459,-3.760999917984009 C2.190000057220459,-3.760999917984009 1.5130000114440918,-5.5920000076293945 1.5130000114440918,-5.5920000076293945z"></path></g></g></g></g></svg>
+            (Apps)</span></li>
+          <li class="step"><span class="step-num">3</span><span>Выберите <strong style="color:var(--white)">FlaviBot</strong> или <strong style="color:var(--white)">FlaviBot2</strong></span></li>
+          <li class="step"><span class="step-num">4</span><span>Команда <strong style="color:var(--white)">play</strong> → ссылка или текст </span></li>
+          <li class="step"><span class="step-num">5</span><span>Выберите результат → появится плеер</span></li>
+        </ul>
+      </div>
+      <div class="queue-tip">
+        <span class="icon">📋</span>
+        <span>Добавить в очередь: введите <code style="font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">/play</code> → выберите бота из меню → вставьте ссылку</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Maki -->
+  <div class="bot-card">
+    <div class="bot-header">
+      <div class="bot-avatar overflow-hidden" style="background: #F04545;">
+        <img src="./img/bot2.png"/></div>
+      <div class="bot-meta">
+        <h2>Maki</h2>
+        <p>Один инстанс на сервер</p>
+      </div>
+      <div class="limit-badge">⚡ Макс. 1 инстанс</div>
+    </div>
+    <div class="bot-body">
+      <div>
+        <div class="section-label">Поддерживает</div>
+        <div class="platforms">
+          <div class="platform-chip"><span class="dot" style="background:#1DB954"></span>Spotify</div>
+          <div class="platform-chip"><span class="dot" style="background:#fc3c44"></span>Apple Music</div>
+          <div class="platform-chip"><span class="dot" style="background:#ff7700"></span>SoundCloud</div>
+          <div class="platform-chip"><span class="dot" style="background:#FF0000"></span>YouTube</div>
+          <div class="platform-chip"><span class="dot" style="background:#5865F2"></span>Радио</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">Как запустить</div>
+        <ul class="steps">
+          <li class="step"><span class="step-num">1</span><span>Зайдите в голосовой канал</span></li>
+          <li class="step"><span class="step-num">2</span><span>В тексте канала, справа от ввода сообщения нажмите на иконку
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 96 96" width="96" height="96" preserveAspectRatio="xMidYMid meet" style="width: 20px; height: 20px; display: inline-block;
+             content-visibility: visible;margin-bottom: -5px;
+  margin-left: 2px;"><defs><clipPath id="__lottie_element_108"><rect width="96" height="96" x="0" y="0"></rect></clipPath><clipPath id="__lottie_element_110"><path d="M0,0 L96,0 L96,96 L0,96z"></path></clipPath></defs><g clip-path="url(#__lottie_element_108)"><g clip-path="url(#__lottie_element_110)" transform="matrix(2.700000047683716,0,0,2.700000047683716,-79.60000610351562,-81.35110473632812)" opacity="1" style="display: block;"><g transform="matrix(1,0,0,1,32.02199935913086,32.64699935913086)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.179999828338623,7.181000232696533)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M-6.554999828338623,1.6410000324249268 C-6.929999828338623,3.0420000553131104 -6.099999904632568,4.480999946594238 -4.698999881744385,4.85699987411499 C-4.698999881744385,4.85699987411499 1.6410000324249268,6.554999828338623 1.6410000324249268,6.554999828338623 C3.0409998893737793,6.931000232696533 4.48199987411499,6.098999977111816 4.85699987411499,4.698999881744385 C4.85699987411499,4.698999881744385 6.554999828338623,-1.6410000324249268 6.554999828338623,-1.6410000324249268 C6.929999828338623,-3.0420000553131104 6.098999977111816,-4.480999946594238 4.698999881744385,-4.85699987411499 C4.698999881744385,-4.85699987411499 -1.6410000324249268,-6.556000232696533 -1.6410000324249268,-6.556000232696533 C-3.0409998893737793,-6.931000232696533 -4.48199987411499,-6.099999904632568 -4.85699987411499,-4.698999881744385 C-4.85699987411499,-4.698999881744385 -6.554999828338623,1.6410000324249268 -6.554999828338623,1.6410000324249268z"></path></g></g><g transform="matrix(1,0,0,1,47.44300079345703,32.419002532958984)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.802000045776367,7.021999835968018)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M-6.478000164031982,2.4040000438690186 C-7.552000045776367,4.372000217437744 -6.126999855041504,6.771999835968018 -3.884999990463257,6.771999835968018 C-3.884999990463257,6.771999835968018 3.885999917984009,6.771999835968018 3.885999917984009,6.771999835968018 C6.127999782562256,6.771999835968018 7.552000045776367,4.372000217437744 6.479000091552734,2.4040000438690186 C6.479000091552734,2.4040000438690186 2.5929999351501465,-4.718999862670898 2.5929999351501465,-4.718999862670898 C1.4739999771118164,-6.771999835968018 -1.4730000495910645,-6.771999835968018 -2.5929999351501465,-4.718999862670898 C-2.5929999351501465,-4.718999862670898 -6.478000164031982,2.4040000438690186 -6.478000164031982,2.4040000438690186z"></path></g></g><g transform="matrix(1,0,0,1,32.119998931884766,49.04499816894531)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.081999778747559,7.046999931335449)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M-0.9409999847412109,-6.26800012588501 C-0.42100000381469727,-6.796999931335449 0.41999998688697815,-6.796999931335449 0.9409999847412109,-6.26800012588501 C0.9409999847412109,-6.26800012588501 2.056999921798706,-5.132999897003174 2.056999921798706,-5.132999897003174 C2.2699999809265137,-4.916999816894531 2.5480000972747803,-4.78000020980835 2.8459999561309814,-4.744999885559082 C2.8459999561309814,-4.744999885559082 4.4120001792907715,-4.561999797821045 4.4120001792907715,-4.561999797821045 C5.140999794006348,-4.4770002365112305 5.665999889373779,-3.805999994277954 5.585000038146973,-3.061000108718872 C5.585000038146973,-3.061000108718872 5.410999774932861,-1.4630000591278076 5.410999774932861,-1.4630000591278076 C5.377999782562256,-1.1579999923706055 5.447000026702881,-0.8510000109672546 5.605999946594238,-0.5910000205039978 C5.605999946594238,-0.5910000205039978 6.441999912261963,0.7720000147819519 6.441999912261963,0.7720000147819519 C6.831999778747559,1.406999945640564 6.644999980926514,2.24399995803833 6.0229997634887695,2.6440000534057617 C6.0229997634887695,2.6440000534057617 4.690999984741211,3.502000093460083 4.690999984741211,3.502000093460083 C4.436999797821045,3.6649999618530273 4.24399995803833,3.9119999408721924 4.144000053405762,4.201000213623047 C4.144000053405762,4.201000213623047 3.621000051498413,5.7179999351501465 3.621000051498413,5.7179999351501465 C3.378000020980835,6.423999786376953 2.619999885559082,6.796999931335449 1.9259999990463257,6.551000118255615 C1.9259999990463257,6.551000118255615 0.43799999356269836,6.021999835968018 0.43799999356269836,6.021999835968018 C0.15399999916553497,5.921999931335449 -0.1550000011920929,5.921999931335449 -0.43799999356269836,6.021999835968018 C-0.43799999356269836,6.021999835968018 -1.9270000457763672,6.551000118255615 -1.9270000457763672,6.551000118255615 C-2.619999885559082,6.796999931335449 -3.378000020980835,6.423999786376953 -3.621999979019165,5.7179999351501465 C-3.621999979019165,5.7179999351501465 -4.144999980926514,4.201000213623047 -4.144999980926514,4.201000213623047 C-4.24399995803833,3.9119999408721924 -4.436999797821045,3.6649999618530273 -4.690999984741211,3.502000093460083 C-4.690999984741211,3.502000093460083 -6.02400016784668,2.6440000534057617 -6.02400016784668,2.6440000534057617 C-6.644999980926514,2.24399995803833 -6.831999778747559,1.406999945640564 -6.442999839782715,0.7720000147819519 C-6.442999839782715,0.7720000147819519 -5.605999946594238,-0.5910000205039978 -5.605999946594238,-0.5910000205039978 C-5.447000026702881,-0.8510000109672546 -5.377999782562256,-1.1579999923706055 -5.4120001792907715,-1.4630000591278076 C-5.4120001792907715,-1.4630000591278076 -5.585000038146973,-3.061000108718872 -5.585000038146973,-3.061000108718872 C-5.665999889373779,-3.805999994277954 -5.142000198364258,-4.4770002365112305 -4.4120001792907715,-4.561999797821045 C-4.4120001792907715,-4.561999797821045 -2.8469998836517334,-4.744999885559082 -2.8469998836517334,-4.744999885559082 C-2.5480000972747803,-4.78000020980835 -2.2699999809265137,-4.916999816894531 -2.056999921798706,-5.132999897003174 C-2.056999921798706,-5.132999897003174 -0.9409999847412109,-6.26800012588501 -0.9409999847412109,-6.26800012588501z"></path></g></g><g transform="matrix(-1,0,0,-1,62.694000244140625,63.320003509521484)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,7.247000217437744,7.247000217437744)"><path fill="rgb(199,200,206)" fill-opacity="1" d=" M1.5130000114440918,-5.5920000076293945 C0.9929999709129333,-6.997000217437744 -0.9940000176429749,-6.997000217437744 -1.5140000581741333,-5.5920000076293945 C-1.5140000581741333,-5.5920000076293945 -2.190999984741211,-3.760999917984009 -2.190999984741211,-3.760999917984009 C-2.4600000381469727,-3.0339999198913574 -3.0339999198913574,-2.4600000381469727 -3.76200008392334,-2.190999984741211 C-3.76200008392334,-2.190999984741211 -5.5920000076293945,-1.5130000114440918 -5.5920000076293945,-1.5130000114440918 C-6.997000217437744,-0.9940000176429749 -6.997000217437744,0.9929999709129333 -5.5920000076293945,1.5130000114440918 C-5.5920000076293945,1.5130000114440918 -3.76200008392334,2.190999984741211 -3.76200008392334,2.190999984741211 C-3.0339999198913574,2.4600000381469727 -2.4600000381469727,3.0339999198913574 -2.190999984741211,3.760999917984009 C-2.190999984741211,3.760999917984009 -1.5140000581741333,5.5920000076293945 -1.5140000581741333,5.5920000076293945 C-0.9940000176429749,6.997000217437744 0.9929999709129333,6.997000217437744 1.5130000114440918,5.5920000076293945 C1.5130000114440918,5.5920000076293945 2.190000057220459,3.760999917984009 2.190000057220459,3.760999917984009 C2.4600000381469727,3.0339999198913574 3.0329999923706055,2.4600000381469727 3.760999917984009,2.190999984741211 C3.760999917984009,2.190999984741211 5.5920000076293945,1.5130000114440918 5.5920000076293945,1.5130000114440918 C6.997000217437744,0.9929999709129333 6.997000217437744,-0.9940000176429749 5.5920000076293945,-1.5130000114440918 C5.5920000076293945,-1.5130000114440918 3.760999917984009,-2.190999984741211 3.760999917984009,-2.190999984741211 C3.0329999923706055,-2.4600000381469727 2.4600000381469727,-3.0339999198913574 2.190000057220459,-3.760999917984009 C2.190000057220459,-3.760999917984009 1.5130000114440918,-5.5920000076293945 1.5130000114440918,-5.5920000076293945z"></path></g></g></g></g></svg>
+            (Apps)</span></li>
+          <li class="step"><span class="step-num">3</span><span>Выберите <strong style="color:var(--white)">Maki</strong></span></li>
+          <li class="step"><span class="step-num">4</span><span>Команда <strong style="color:var(--white)">play</strong> → вставьте ссылку → подтвердите</span></li>
+          <li class="step"><span class="step-num">5</span><span>В чате появится плеер с кнопками</span></li>
+        </ul>
+      </div>
+      <div class="queue-tip">
+        <span class="icon">📋</span>
+        <span>Добавить в очередь: <code style="font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">/play</code> → выберите Maki из меню → ссылка</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jockie Music -->
+  <div class="commands-card">
+    <div class="commands-header">
+      <div class="bot-avatar overflow-hidden" style="background: #E4E4E4;">
+        <img src="./img/bot3.png"/></div>
+      <div class="bot-meta">
+        <h2>Jockie Music</h2>
+        <p>До 4 копий в разных каналах — только текстовые команды</p>
+      </div>
+      <div class="bot-badges">
+      <div class="limit-badge">⚡ Макс. 1 инстанс</div>
+      <div class="limit-badge -warning-note">⚠️ Нет кнопок управления</div>
+      </div>
+    </div>
+    <div style="padding: 16px 28px 0;">
+      <div class="section-label">Поддерживает</div>
+      <div class="platforms" style="margin-bottom: 20px;">
+        <div class="platform-chip"><span class="dot" style="background:#1DB954"></span>Spotify</div>
+        <div class="platform-chip"><span class="dot" style="background:#fc3c44"></span>Apple Music</div>
+        <div class="platform-chip"><span class="dot" style="background:#FF7100"></span>Deezer</div>
+        <div class="platform-chip"><span class="dot" style="background:#FF0000"></span>YouTube</div>
+        <div class="platform-chip"><span class="dot" style="background:#00B3C6"></span>Tidal</div>
+        <div class="platform-chip"><span class="dot" style="background:#ff7700"></span>SoundCloud</div>
+        <div class="platform-chip"><span class="dot" style="background:#1DA0C1"></span>Bandcamp</div>
+        <div class="platform-chip"><span class="dot" style="background:#9146FF"></span>Twitch</div>
+      </div>
+    </div>
+    <div class="commands-table-wrap">
+      <div class="section-label">Команды управления</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:48%">Команда</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="cmd">m!play &lt;ссылка или текст&gt;</span></td><td class="cmd-action"><span class="cmd-emoji">🎶</span>Воспроизвести</td></tr>
+          <tr><td><span class="cmd">m!pause</span></td><td class="cmd-action"><span class="cmd-emoji">⏸️</span>Пауза / снять с паузы</td></tr>
+          <tr><td><span class="cmd">m!resume</span></td><td class="cmd-action"><span class="cmd-emoji">▶️</span>Снять с паузы</td></tr>
+          <tr><td><span class="cmd">m!skip</span> / <span class="cmd">m!next</span></td><td class="cmd-action"><span class="cmd-emoji">⏭️</span>Следующий трек</td></tr>
+          <tr><td><span class="cmd">m!prev</span></td><td class="cmd-action"><span class="cmd-emoji">⏮️</span>Предыдущий трек</td></tr>
+          <tr><td><span class="cmd">m!stop</span></td><td class="cmd-action"><span class="cmd-emoji">🛑</span>Стоп + очистить очередь</td></tr>
+          <tr><td><span class="cmd">m!queue</span> / <span class="cmd">m!q</span></td><td class="cmd-action"><span class="cmd-emoji">📜</span>Показать очередь</td></tr>
+          <tr><td><span class="cmd">m!shuffle</span></td><td class="cmd-action"><span class="cmd-emoji">🔀</span>Перемешать</td></tr>
+          <tr><td><span class="cmd">m!loop</span></td><td class="cmd-action"><span class="cmd-emoji">🔁</span>Зациклить (трек / очередь)</td></tr>
+          <tr><td><span class="cmd">m!leave</span> / <span class="cmd">m!dc</span></td><td class="cmd-action"><span class="cmd-emoji">👋</span>Отключить бота</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-icon">💡</div>
+      <h3>Общие советы</h3>
+    </div>
+    <ul class="tips-list">
+      <li class="tip">
+        <span class="tip-dot"></span>
+        <span>Боты <strong style="color:var(--white)">не мешают друг другу</strong> — можно запустить FlaviBot в одном канале, Maki в другом, Jockie в третьем одновременно</span>
+      </li>
+      <li class="tip">
+        <span class="tip-dot"></span>
+        <span>Чтобы <strong style="color:var(--white)">переместить бота</strong> в другой канал — сначала отключите его командой <code style="font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">/leave</code> или кнопкой, зайдите в новый канал и запустите снова</span>
+      </li>
+      <li class="tip">
+        <span class="tip-dot"></span>
+        <span>У Jockie Music <strong style="color:var(--white)">4 копии</strong> (Jockie Music 1, 2, 3, 4) — можно занять разные голосовые каналы независимо друг от друга</span>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- <footer>
+  <strong>Fun Beats</strong> Discord-сервер &nbsp;·&nbsp; Музыкальные боты: FlaviBot · Maki · Jockie Music
+</footer> -->
+
+</body>
+</html>
